@@ -1,9 +1,9 @@
-﻿// Type definitions for openpgpjs
+// Type definitions for openpgpjs
 // Project: http://openpgpjs.org/
 // Definitions by: Guillaume Lacasa <https://blog.lacasa.fr>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
-/// <reference path="../es6-promise/es6-promise.d.ts" />
+/// <reference path="../../typings/es6-promise/es6-promise.d.ts" />
 
 declare module openpgp {
 
@@ -364,6 +364,14 @@ declare module openpgp.enums {
         aes256,
         twofish
     }
+
+    enum keyStatus {
+        invalid,
+        expired,
+        revoked,
+        valid,
+        no_self_cert
+    }
 }
 
 declare module openpgp.key {
@@ -377,7 +385,18 @@ declare module openpgp.key {
      */
     interface Key {
         armor(): String,
-        decrypt(passphrase: String): Boolean,
+        decrypt(passphrase: string): boolean;
+        getExpirationTime(): Date;
+        getKeyIds(): Array<any>;
+        getPreferredHashAlgorithm(): string;
+        getPrimaryUser(): any;
+        getUserIds(): Array<string>;
+        isPrivate(): boolean;
+        isPublic(): boolean;
+        primaryKey: packet.PublicKey;
+        toPublic(): Key;
+        update(key: Key);
+        verifyPrimaryKey(): enums.keyStatus;
     }
 
     /** Generates a new OpenPGP key. Currently only supports RSA keys. Primary and subkey will be of same type.
@@ -461,6 +480,18 @@ declare module openpgp.message {
 }
 
 declare module openpgp.packet {
+
+    interface PublicKey {
+        algorithm: enums.publicKey;
+        created: Date;
+        fingerprint: string;
+
+        getBitSize(): number;
+        getFingerprint(): string;
+        getKeyId(): string;
+        read(input: string): any;
+        write(): any;
+    }
 
     /** Allocate a new packet from structured packet clone
         @param packetClone packet clone
